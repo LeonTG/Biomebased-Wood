@@ -96,7 +96,7 @@ public class Main extends JavaPlugin {
      * @param start The block to start from.
      * @return A list of the vein blocks.
      */
-    public static List<Block> getVein(Block start) {
+    public List<Block> getVein(Block start) {
         Function<Block, Material> getType = block -> {
             Material type = block.getType();
 
@@ -116,7 +116,7 @@ public class Main extends JavaPlugin {
      * @param start The block to start from.
      * @return A list of the vein blocks.
      */
-    private static List<Block> getVein(Block start, Predicate<Block> predicate, int maxVeinSize) {
+    private List<Block> getVein(Block start, Predicate<Block> predicate, int maxVeinSize) {
         LinkedList<Block> toCheck = Lists.newLinkedList();
         ArrayList<Block> vein = Lists.newArrayList();
 
@@ -153,7 +153,7 @@ public class Main extends JavaPlugin {
      * @param block The block to get by.
      * @return The nearby blocks.
      */
-    public static List<Block> getNearby(Block block) {
+    public List<Block> getNearby(Block block) {
         List<Block> nearby = Lists.newArrayList();
 
         for (int dx = -1; dx <= 1; dx++) {
