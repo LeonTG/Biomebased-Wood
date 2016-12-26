@@ -95,8 +95,8 @@ public class ChunkModifiableListener implements Listener {
                                 plugin.hasBlockNearby(Material.BIRCH_FENCE, block.getLocation()) ||
                                 plugin.hasBlockNearby(Material.JUNGLE_FENCE, block.getLocation()) ||
                                 plugin.hasBlockNearby(Material.ACACIA_FENCE, block.getLocation()) ||
-                                plugin.hasBlockNearby(Material.DARK_OAK_FENCE, block.getLocation())
-                                ) {
+                                plugin.hasBlockNearby(Material.DARK_OAK_FENCE, block.getLocation())) {
+
                             block.setType(Material.ANVIL);
                             continue;
                         }
@@ -204,6 +204,10 @@ public class ChunkModifiableListener implements Listener {
                     switch (oldMaterial) {
                         case LOG:
                         case LOG_2:
+                            if (hasLeavesNearby(block)) {
+                                break;
+                            }
+
                             if (oldMaterial != logMaterial) {
                                 block.setType(logMaterial);
                             }
@@ -239,5 +243,17 @@ public class ChunkModifiableListener implements Listener {
         }
 
         physics = true;
+    }
+
+    private boolean hasLeavesNearby(Block start) {
+        for (Block vein : plugin.getVein(start)) {
+            for (Block loop : plugin.getNearby(vein)) {
+                if (loop.getType() == Material.LEAVES || loop.getType() == Material.LEAVES_2) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

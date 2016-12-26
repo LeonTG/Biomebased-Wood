@@ -27,6 +27,7 @@
 
 package com.leontg77.biomebasedwood;
 
+import com.google.common.collect.Lists;
 import com.leontg77.biomebasedwood.listeners.ChunkModifiableListener;
 import com.leontg77.biomebasedwood.listeners.ChunkPopulateListener;
 import org.bukkit.Bukkit;
@@ -35,6 +36,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Main class of the plugin class.
@@ -79,5 +86,88 @@ public class Main extends JavaPlugin {
         }
 
         return false;
+    }
+
+    private static final int DEFAULT_VEIN_LIMIT = 100;
+
+    /**
+     * Get the ore vein at the given starting block's location.
+     *
+     * @param start The block to start from.
+     * @return A list of the vein blocks.
+     */
+    public static List<Block> getVein(Block start) {
+        Function<Block, Material> getType = block -> {
+            Material type = block.getType();
+
+            if (type == Material.GLOWING_REDSTONE_ORE) {
+                type = Material.REDSTONE_ORE;
+            }
+            return type;
+        };
+
+        Material startType = getType.apply(start);
+        return getVein(start, relative -> startType == getType.apply(relative), DEFAULT_VEIN_LIMIT);
+    }
+
+    /**
+     * Get the ore vein at the given starting block's location.
+     *
+     * @param start The block to start from.
+     * @return A list of the vein blocks.
+     */
+    private static List<Block> getVein(Block start, Predicate<Block> predicate, int maxVeinSize) {
+        LinkedList<Block> toCheck = Lists.newLinkedList();
+        ArrayList<Block> vein = Lists.newArrayList();
+
+        toCheck.add(start);
+        vein.add(start);
+
+        while (!toCheck.isEmpty()) {
+            Block check = toCheck.poll();
+
+            for (Block nearbyBlock : getNearby(check)) {
+                if (vein.contains(nearbyBlock)) {
+                    continue;
+                }
+
+                if (!predicate.test(nearbyBlock)) {
+                    continue;
+                }
+
+                toCheck.add(nearbyBlock);
+                vein.add(nearbyBlock);
+
+                if (vein.size() > maxVeinSize) {
+                    return vein;
+                }
+            }
+        }
+
+        return vein;
+    }
+
+    /**
+     * Get the block nearby the given block.
+     *
+     * @param block The block to get by.
+     * @return The nearby blocks.
+     */
+    public static List<Block> getNearby(Block block) {
+        List<Block> nearby = Lists.newArrayList();
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
+
+                    nearby.add(block.getRelative(dx, dy, dz));
+                }
+            }
+        }
+
+        return nearby;
     }
 }

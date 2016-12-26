@@ -6,6 +6,7 @@
 
     <groupId>com.leontg77</groupId>
     <artifactId>biomebasedwood</artifactId>
+    <name>BiomeBasedWood</name>
     <version>1.0</version>
 
     <repositories>
